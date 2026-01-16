@@ -31,11 +31,14 @@
 
     <!-- ========== HERO SECTION ========== -->
     <section id="accueil" class="hero">
+        <!-- Poster fallback visible tant que la vidéo n'est pas prête -->
+        <img class="hero-poster" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1920" alt="Logistique">
+
         <!-- VIDÉO : Remplacez par votre vidéo de dédouanement -->
-        <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1920">
-            <source src="../Vidéos/6618335-uhd_3840_2160_24fps.mp4" type="video/mp4">
+        <video id="heroVideo" class="hero-video" autoplay muted controls loop playsinline preload="auto" poster="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1920" style="visibility:hidden;">
+            <source src="../Vid%C3%A9os/6618335-uhd_3840_2160_24fps.mp4" type="video/mp4">
         </video>
-        
+
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1>Votre partenaire pour une logistique et un transit sans souci</h1>
@@ -284,5 +287,38 @@
 
     <!-- Lien vers le fichier JavaScript -->
     <script src="../css/js/script.js"></script>
+    <script>
+        // Diagnostic et fallback pour la vidéo du hero
+        (function(){
+            const vid = document.getElementById('heroVideo');
+            const poster = document.querySelector('.hero-poster');
+
+            if (!vid) return;
+
+            // Quand la vidéo a assez de données, on l'affiche et on cache le poster
+            vid.addEventListener('loadeddata', () => {
+                try {
+                    vid.style.visibility = 'visible';
+                    if (poster) poster.style.display = 'none';
+                    console.log('Hero video ready');
+                } catch (e) { console.error(e); }
+            });
+
+            // Si erreur de chargement, on log et on laisse le poster
+            vid.addEventListener('error', (e) => {
+                console.error('Erreur chargement vidéo hero:', e);
+                if (poster) poster.style.display = 'block';
+            });
+
+            // Timeout: si après 5s la vidéo n'est pas prête, on conserve le poster
+            setTimeout(() => {
+                if (vid.readyState < 2) {
+                    console.warn('Hero video not ready, keeping poster.');
+                    vid.style.visibility = 'hidden';
+                    if (poster) poster.style.display = 'block';
+                }
+            }, 5000);
+        })();
+    </script>
 </body>
 </html>
